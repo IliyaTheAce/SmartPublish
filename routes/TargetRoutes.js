@@ -58,4 +58,21 @@ router.patch("/send", async (req, res) => {
   }
 });
 
+router.patch("/unreserveAllTargets", async (req, res) => {
+  try {
+    const result = await Target.updateMany(
+      {},
+      {
+        reserved: false,
+      }
+    );
+    console.log(result);
+    res.send("All targets got updated");
+  } catch (err) {
+    res.status(400);
+    // res.send("Internal server error! please check the server");
+    res.send(err.message);
+  }
+});
+
 module.exports = router;

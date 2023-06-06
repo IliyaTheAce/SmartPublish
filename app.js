@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const dbUrl = process.env.MONGODB_CONNECTION_PATH;
 const cors = require("cors");
 
+const JobRoutes = require("./routes/JobRoutes");
 const WorkerRoutes = require("./routes/WorkerRoutes");
 const TargetRoutes = require("./routes/TargetRoutes");
 
@@ -20,6 +21,7 @@ mongoose
 
 app.use(express.json());
 app.use(cors());
+app.use("/", JobRoutes);
 app.use("/worker", WorkerRoutes);
 app.use("/target", TargetRoutes);
 

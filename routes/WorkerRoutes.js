@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Worker = require("../Models/workerModel");
+const Target = require("../Models/targetModel");
 
 router.get("/", async (req, res) => {
   try {
@@ -43,6 +44,23 @@ router.post("/create", async (req, res) => {
   } catch (err) {
     res.status(400);
     res.send("Internal server error! please check the server");
+  }
+});
+
+router.patch("/freeAllWorkers", async (req, res) => {
+  try {
+    const result = await Worker.updateMany(
+      {},
+      {
+        nextShift: Date.now(),
+      }
+    );
+    console.log(result);
+    res.send("All Workers got updated");
+  } catch (err) {
+    res.status(400);
+    // res.send("Internal server error! please check the server");
+    res.send(err.message);
   }
 });
 
