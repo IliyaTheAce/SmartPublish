@@ -3,6 +3,7 @@ const router = express.Router();
 const Job = require("../Models/jobModel");
 const Worker = require("../Models/workerModel");
 const Target = require("../Models/targetModel");
+const Order = require("../Models/orderModel");
 
 router.get("/getNewJob", async (req, res) => {
   try {
@@ -14,9 +15,14 @@ router.get("/getNewJob", async (req, res) => {
 
     if (worker) {
       //Get Targets
+      let order = await Order.findOne({ highPriority: true });
+      if (!order) {
+        order = await Order.findOne();
+      }
+
       const amount = worker.allowedDirectCount;
       const targets = await Target.find(
-        { isPrivate: false, sent: false, reserved: false },
+        { isPrivate: false, sent: false, reserved: false, order: order._id },
         { username: 1 }
       ).limit(amount);
 
@@ -48,6 +54,7 @@ router.get("/getNewJob", async (req, res) => {
           username: worker.username,
           password: worker.password,
           target: targets,
+          messages: order.messages,
         });
       } else {
         res.status(400);
@@ -94,23 +101,23 @@ router.patch("/finished", async (req, res) => {
     const { jobId, failed, success } = req.body;
     const job = await Job.findById(jobId).populate().exec();
     if (job) {
-      // if (job.completed === true) {
-      //   res.send("Job is already completed");
-      //   return;
-      // }
+      if (job.completed === true) {
+        res.send("Job is already completed");
+        return;
+      }
 
       job.completed = true;
       job.endDate = Date.now();
 
       failed.forEach(async (target) => {
-        const tar = await Target.findById(target._id);
+        const tar = await Target.findById(target);
         tar.isPrivate = true;
         tar.sent = false;
         await tar.save();
       });
 
       success.forEach(async (target) => {
-        const tar = await Target.findById(target._id);
+        const tar = await Target.findById(target);
         tar.sent = true;
         tar.sendDate = Date.now();
         await tar.save();
