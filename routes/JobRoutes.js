@@ -33,22 +33,18 @@ router.get("/getNewJob", async (req, res) => {
         nextShiftDate.setHours(nextShiftDate.getHours() + 24);
         worker.nextShift = nextShiftDate;
         await worker.save();
-        //Mark targets as reserved
-        targets.forEach((target) => {
-          target.reserved = true;
-          target.save();
-        });
 
-        const filteredTargets = [];
-        await targets.forEach((tar) => {
-          filteredTargets.push(tar._id);
-        });
+        await Target.updateMany(
+          { username: { $in: targets.map((target) => target.username) } },
+          { $set: { reserved: true } }
+        );
+
+        const filteredTargets = targets.map((tar) => tar._id);
         //Create job
-        const job = new Job({
+        const job = Job.create({
           workerId: worker._id,
           targets: filteredTargets,
         });
-        job.save();
         res.json({
           jobId: job._id,
           username: worker.username,
