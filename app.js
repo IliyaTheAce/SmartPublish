@@ -9,6 +9,7 @@ const cors = require("cors");
 const JobRoutes = require("./routes/JobRoutes");
 const WorkerRoutes = require("./routes/WorkerRoutes");
 const TargetRoutes = require("./routes/TargetRoutes");
+const OrderRoutes = require("./routes/OrderRoutes");
 
 mongoose
   .connect(dbUrl)
@@ -23,7 +24,8 @@ app.use(express.json());
 app.use(cors());
 app.use("/", JobRoutes);
 app.use("/worker", WorkerRoutes);
-app.use("/target", TargetRoutes);
+app.use("/targets", TargetRoutes);
+app.use("/orders", OrderRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log("app is listening on port: " + process.env.PORT);

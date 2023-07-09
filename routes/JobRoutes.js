@@ -18,6 +18,10 @@ router.get("/getNewJob", async (req, res) => {
       let order = await Order.findOne({ highPriority: true });
       if (!order) {
         order = await Order.findOne();
+        if(!order){
+          res.status(400);
+          res.send("No Order available.");
+        }
       }
 
       const amount = worker.allowedDirectCount;
