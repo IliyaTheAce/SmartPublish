@@ -55,7 +55,6 @@ router.patch("/freeAllWorkers", async (req, res) => {
         nextShift: Date.now(),
       }
     );
-    console.log(result);
     res.send("All Workers got updated");
   } catch (err) {
     res.status(400);

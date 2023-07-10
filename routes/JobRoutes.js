@@ -45,7 +45,7 @@ router.get("/getNewJob", async (req, res) => {
 
         const filteredTargets = targets.map((tar) => tar._id);
         //Create job
-        const job = Job.create({
+        const job = await Job.create({
           workerId: worker._id,
           targets: filteredTargets,
         });
@@ -108,7 +108,7 @@ router.patch("/finished", async (req, res) => {
 
       job.completed = true;
       job.endDate = Date.now();
-
+//TODO: Fix this shit
       failed.forEach(async (target) => {
         const tar = await Target.findById(target);
         tar.isPrivate = true;
